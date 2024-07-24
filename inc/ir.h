@@ -21,9 +21,6 @@ typedef std::list<InstBasePtr>::iterator InstItr;
 
 typedef std::list<wasm_type_t> typelist;
 
-struct ScopeBlock;
-typedef std::list<ScopeBlock> ScopeList;
-
 /* Utility Functions */
 const char* wasm_type_string(wasm_type_t type);
 const char* wasm_section_name(byte sec_code);
@@ -245,29 +242,8 @@ class WasmModule {
     DECODE_DECL(datacount);
     DECODE_DECL(custom);
 
-    /* Encode functions */
-    #define ENCODE_DECL(sec, ...)  \
-      bytedeque encode_##sec##_section (__VA_ARGS__);
-    ENCODE_DECL(type);
-    ENCODE_DECL(import);
-    ENCODE_DECL(function);
-    ENCODE_DECL(table);
-    ENCODE_DECL(memory);
-    ENCODE_DECL(global);
-    ENCODE_DECL(export);
-    ENCODE_DECL(start);
-    ENCODE_DECL(element);
-    ENCODE_DECL(code);
-    ENCODE_DECL(data);
-    ENCODE_DECL(datacount);
-    ENCODE_DECL(custom, CustomDecl &custom);
-
     /* Code decoding for instructions */
     InstList decode_expr_to_insts (buffer_t &buf, bool gen_cfg);
-    /* Code encoding for instructions */
-    void encode_expr_to_insts (bytedeque &bdeq, InstList &instlist, bytearr &bytes);
-    /* Code + local encoding for instructions */
-    bytedeque encode_code (FuncDecl &func);
 
     /* Descriptor patching for copy/assign */
     template<typename T>
@@ -322,50 +298,9 @@ class WasmModule {
     /* Debug Accessor */
     inline std::list<DebugNameAssoc>* getFnDebugNames() { return this->fn_names_debug; }
 
-    /* Scope view of function code */
-    ScopeList gen_scopes_from_instructions(FuncDecl *func);
-
     /* Decode wasm file from buffer */
     void decode_buffer (buffer_t &buf, bool gen_cfg);
-    /* Encode module into wasm format */
-    bytedeque encode_module (char* outfile);
 
-
-    /* Instrumentation methods */
-    
-    /* Addition */
-    /* Module-internal values with optional export */
-    SigDecl*    add_sig     (SigDecl &sig, bool force_dup = false);
-    GlobalDecl* add_global  (GlobalDecl &global, const char* export_name = NULL);
-    TableDecl*  add_table   (TableDecl &table, const char* export_name = NULL);
-    MemoryDecl* add_memory  (MemoryDecl &mem, const char* export_name = NULL);
-    FuncDecl*   add_func    (FuncDecl &func, const char* export_name = NULL, const char* debug_name = NULL);
-
-    /* Imported values */
-    ImportDecl* add_import (ImportInfo &info, GlobalInfo &global);
-    ImportDecl* add_import (ImportInfo &info, TableDecl &table);
-    ImportDecl* add_import (ImportInfo &info, MemoryDecl &mem);
-    ImportDecl* add_import (ImportInfo &info, SigDecl &sig);
-
-    /* Exported values */
-    ExportDecl* add_export (std::string export_name, GlobalDecl &global);
-    ExportDecl* add_export (std::string export_name, TableDecl &table);
-    ExportDecl* add_export (std::string export_name, MemoryDecl &mem);
-    ExportDecl* add_export (std::string export_name, FuncDecl &func);
-
-    /* Find */
-    ExportDecl* find_export (std::string export_name);
-
-    GlobalDecl* find_import_global (std::string mod_name, std::string member_name);
-    TableDecl* find_import_table (std::string mod_name, std::string member_name);
-    MemoryDecl* find_import_memory (std::string mod_name, std::string member_name);
-    FuncDecl* find_import_func (std::string mod_name, std::string member_name);
-
-    /* Replace uses: UNIMPLEMENTED */
-    void replace_all_uses (GlobalDecl* old_inst, GlobalDecl* new_inst);
-    void replace_all_uses (TableDecl* old_inst, TableDecl* new_inst);
-    void replace_all_uses (MemoryDecl* old_inst, MemoryDecl* new_inst);
-    void replace_all_uses (FuncDecl* old_inst, FuncDecl* new_inst);
 };
 
 
