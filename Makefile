@@ -1,7 +1,7 @@
 .PHONY: build
 
 build:
-	cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_VERBOSE_MAKEFILE=1
+	cmake -B build
 	make -C build
 
 clean:
