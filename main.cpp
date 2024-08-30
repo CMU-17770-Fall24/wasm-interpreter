@@ -28,7 +28,7 @@ args_t parse_args(int argc, char* argv[]) {
       case 0: break;
       case 'a':
         args.mainargs.push_back(optarg);
-        while ((optind < (argc - 1)) && argv[optind][0] != '-') {
+        while ((optind < (argc - 1))) {
           args.mainargs.push_back(argv[optind++]);
         }
         break;
