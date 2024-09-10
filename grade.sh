@@ -96,3 +96,4 @@ echo ""
 echo "============== SUMMARY =============="
 printf '# Tests: %d | Pass: %d; Fail: %d\n' $num_tests $pass $fail
 echo "====================================="
+exit $fail
